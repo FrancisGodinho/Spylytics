@@ -13,16 +13,16 @@ BETA < -1:
     AHPI: beta = -5.25
     ELTK: beta = -2.76
 
-BETA ~ -1:
+BETA ≈ -1:
     RKDA: beta = -0.82
     DXR: beta = -1.02
     ZM: beta = -1.51
 
-BETA ~ 0:
+BETA ≈ 0:
     AEY: beta = 0.04
     ADSW: beta = 0.27
 
-BETA ~ 1:
+BETA ≈ 1:
     AAPL: beta = 1.23
     ACN: beta = 1.02
     NFLX: beta = 0.97
@@ -33,7 +33,6 @@ BETA > 1:
     URI: beta = 2.40
     DXC: beta = 2.41
 """
-#≈
 
 SCALER = MinMaxScaler(feature_range=(0, 1)) 
 
