@@ -13,21 +13,22 @@ def main():
     Creates an LSTM model, trains it based on S&P500 data, saves the model, 
     and then plots the results of the session.
     """
-    price_history_len = 60
+    price_history_len = 50
     df, x_train, y_train, x_test, y_test = create_datasets(price_history_len)
    
     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
-    #create model
+    #create model and train
     model = create_model((x_train.shape[1], 1))
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train, batch_size=1, epochs=10)
+    model.fit(x_train, y_train, batch_size=1, epochs=3)
 
+    #test model and save
     model.evaluate(x_test, y_test)
-    model.save("./models/spylytics_model.h5")
+    model.save("./models/spylytics_model_new.h5")
 
-    #predict
+    #predict and plot results
     predictions = model.predict(x_test) 
     predictions = SCALER.inverse_transform(predictions)
 
@@ -45,7 +46,7 @@ def create_datasets(price_history_len):
     consists of the price after the 'price_history_len' of the stock.
     """
 
-    df = pd.read_csv('./../data/S&P500_data.csv')[18080:] # get data from 01/03/2000 onwards 18080
+    df = pd.read_csv('./../data/S&P500.csv')[18080:] # get data from 01/03/2000 onwards 18080
     df.drop(['Open', 'High', 'Low', 'Adj Close', 'Volume'], axis=1, inplace=True)
     
     close_prices = df.filter(['Close']).values
@@ -71,8 +72,8 @@ def create_model(input_shape):
     @returns: A tensorflow model.
     """
     model = keras.Sequential()
-    model.add(keras.layers.LSTM(units=50, return_sequences=True, input_shape=input_shape))
-    model.add(keras.layers.LSTM(units=50, return_sequences=False))
+    model.add(keras.layers.LSTM(units=input_shape[0], return_sequences=True, input_shape=input_shape))
+    model.add(keras.layers.LSTM(units=input_shape[0], return_sequences=False))
     model.add(keras.layers.Dense(25))
     model.add(keras.layers.Dense(1))
     return model
@@ -86,6 +87,7 @@ def plot_results(df, predictions):
     @param df: The dataframe which contains all the actual data from the S&P500.
     @param predictions: The resulting predictions of the testing data.
     """
+    #first plot
     plt.figure(figsize=(16,8))
     plt.xlabel('Date', fontsize=18)
     plt.ylabel('Close Price USD', fontsize=18)
